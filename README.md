@@ -1,3 +1,5 @@
+This is forked from vanilla library for experiments on 100M-scale datasets.
+
 # Graph Library for Approximate Similarity Search
 
 pyglass is a library for fast inference of graph index for approximate similarity search.
