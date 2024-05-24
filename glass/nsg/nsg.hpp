@@ -196,7 +196,7 @@ struct NSG : public Builder {
       tmp.clear();
       int cur = cnt += 1;
       if (cur % 10000 == 0) {
-        printf("NSG building progress: [%d/%d]\n", cur, nb);
+        printf("NSG building progress: [%d/%ld]\n", cur, nb);
       }
     }
     auto ed = std::chrono::high_resolution_clock::now();
