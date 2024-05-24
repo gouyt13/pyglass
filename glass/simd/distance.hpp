@@ -182,46 +182,54 @@ inline float IPRef(const float *x, const float *y, int d) {
 }
 FAST_END
 
-inline float L2Sqr(const float *x, const float *y, int d) {
+inline float L2Sqr(const float * x, const float * y, int L)
+{
+    float result;
 #if defined(__AVX512F__)
-  __m512 sum = _mm512_setzero_ps();
-  const float *end = x + d;
-  while (x < end) {
-    auto xx = _mm512_loadu_ps(x);
-    x += 16;
-    auto yy = _mm512_loadu_ps(y);
-    y += 16;
-    auto t = _mm512_sub_ps(xx, yy);
-    sum = _mm512_add_ps(sum, _mm512_mul_ps(t, t));
-  }
-  return reduce_add_f32x16(sum);
+    int num16 = L - (L & 0b1111);
+    __m512 sum = _mm512_setzero_ps();
+    int i;
+    for (i = 0; i < num16; i += 16)
+    {
+        __m512 xx = _mm512_loadu_ps(&x[i]);
+        __m512 yy = _mm512_loadu_ps(&y[i]);
+        __m512 t = _mm512_sub_ps(xx, yy);
+        sum = _mm512_add_ps(sum, _mm512_mul_ps(t, t));
+    }
+    result = _mm512_reduce_add_ps(sum);
+    for(; i < L; ++i)
+    {
+        float tmp = x[i] - y[i];
+        result += tmp * tmp;
+    }
+    return result;
+    
 #elif defined(__AVX2__)
-  __m256 sum = _mm256_setzero_ps();
-  const float *end = x + d;
-  while (x < end) {
-    auto xx = _mm256_loadu_ps(x);
-    x += 8;
-    auto yy = _mm256_loadu_ps(y);
-    y += 8;
-    auto t = _mm256_sub_ps(xx, yy);
-    sum = _mm256_add_ps(sum, _mm256_mul_ps(t, t));
-  }
-  return reduce_add_f32x8(sum);
-#elif defined(__aarch64__)
-  float32x4_t sum = vdupq_n_f32(0);
-  for (int32_t i = 0; i < d; i += 4) {
-    auto xx = vld1q_f32(x + i);
-    auto yy = vld1q_f32(y + i);
-    auto t = vsubq_f32(xx, yy);
-    sum = vmlaq_f32(sum, t, t);
-  }
-  return vaddvq_f32(sum);
+    int num8 = L - (L & 0b111);
+    __m256 sum = _mm256_setzero_ps();
+    int i;
+    for (i = 0; i < num8; i += 8)
+    {
+        __m256 xx = _mm256_loadu_ps(&x[i]);
+        __m256 yy = _mm256_loadu_ps(&y[i]);
+        __m256 t = _mm256_sub_ps(xx, yy);
+        sum = _mm256_add_ps(sum, _mm256_mul_ps(t, t));
+    }
+    result = reduce_add_f32x8(sum);
+    for(; i < L; ++i)
+    {
+        float tmp = x[i] - y[i];
+        result += tmp * tmp;
+    }
+    return result;
+    
 #else
-  float sum = 0.0f;
-  for (int i = 0; i < d; ++i) {
-    sum += (x[i] - y[i]) * (x[i] - y[i]);
-  }
-  return sum;
+    result = 0.f;
+    for (int i = 0; i < L; ++i){
+        float tmp = x[i] - y[i];
+        result += tmp * tmp;
+    }
+    return result;
 #endif
 }
 
