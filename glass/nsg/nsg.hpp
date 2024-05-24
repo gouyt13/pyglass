@@ -43,7 +43,7 @@ struct NSG : public Builder {
     this->nndescent_S = 10;
     this->nndescent_R = 100;
     this->nndescent_L = this->GK + 50;
-    this->nndescent_iter = 10;
+    this->nndescent_iter = 20;
   }
 
   void Build(float *data, int n) override {
