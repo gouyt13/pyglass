@@ -13,12 +13,12 @@
 namespace glass {
 
 struct NSG : public Builder {
-  int d;
+  int64_t d;
   std::string metric;
   int R;
   int L;
   int C;
-  int nb;
+  int64_t nb;
   float *data;
   int ep;
   Graph<int> final_graph;
@@ -32,10 +32,10 @@ struct NSG : public Builder {
 
   explicit NSG(int dim, const std::string &metric, int R = 32, int L = 200)
       : d(dim), metric(metric), R(R), L(L), rng(0x0903) {
-    this->C = R + 100;
+    this->C = 750;
     srand(0x1998);
     if (metric == "L2") {
-      dist_func = L2SqrRef;
+      dist_func = L2Sqr;
     } else if (metric == "IP") {
       dist_func = IPRef;
     }
@@ -359,10 +359,10 @@ struct NSG : public Builder {
     int node = root;
     std::stack<int> stack;
     stack.push(root);
+    vis[root] = true;
     if (vis[root]) {
       cnt++;
     }
-    vis[root] = true;
     while (!stack.empty()) {
       int next = EMPTY_ID;
       for (int i = 0; i < R; i++) {

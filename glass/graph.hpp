@@ -50,13 +50,13 @@ template <typename node_t> struct Graph {
 
   ~Graph() { free(data); }
 
-  const int *edges(int u) const { return data + K * u; }
+  const int *edges(int u) const { return data + static_cast<size_t>(K) * u; }
 
-  int *edges(int u) { return data + K * u; }
+  int *edges(int u) { return data + static_cast<size_t>(K) * u; }
 
-  node_t at(int i, int j) const { return data[i * K + j]; }
+  node_t at(int i, int j) const { return data[i * static_cast<size_t>(K) + j]; }
 
-  node_t &at(int i, int j) { return data[i * K + j]; }
+  node_t &at(int i, int j) { return data[i * static_cast<size_t>(K) + j]; }
 
   void prefetch(int u, int lines) const {
     mem_prefetch((char *)edges(u), lines);
