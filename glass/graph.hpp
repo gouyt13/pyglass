@@ -27,7 +27,7 @@ template <typename node_t> struct Graph {
   Graph(node_t *edges, int N, int K) : N(N), K(K), data(edges) {}
 
   Graph(int N, int K)
-      : N(N), K(K), data((node_t *)alloc2M((size_t)N * K * sizeof(node_t))) {}
+      : N(N), K(K), data((node_t *)alloc2M(static_cast<size_t>(N) * K * sizeof(node_t))) {}
 
   Graph(const Graph &g) : Graph(g.N, g.K) {
     this->eps = g.eps;
@@ -42,7 +42,7 @@ template <typename node_t> struct Graph {
   }
 
   void init(int N, int K) {
-    data = (node_t *)alloc2M((size_t)N * K * sizeof(node_t));
+    data = (node_t *)alloc2M(static_cast<size_t>(N) * K * sizeof(node_t));
     std::memset(data, -1, N * K * sizeof(node_t));
     this->K = K;
     this->N = N;
@@ -81,7 +81,7 @@ template <typename node_t> struct Graph {
     writer.write((char *)eps.data(), nep * 4);
     writer.write((char *)&N, 4);
     writer.write((char *)&K, 4);
-    writer.write((char *)data, N * K * 4);
+    writer.write((char *)data, static_cast<size_t>(N) * K * 4);
     if (initializer) {
       initializer->save(writer);
     }
@@ -98,8 +98,8 @@ template <typename node_t> struct Graph {
     reader.read((char *)eps.data(), nep * 4);
     reader.read((char *)&N, 4);
     reader.read((char *)&K, 4);
-    data = (node_t *)alloc2M((size_t)N * K * 4);
-    reader.read((char *)data, N * K * 4);
+    data = (node_t *)alloc2M(static_cast<size_t>(N) * K * 4);
+    reader.read((char *)data, static_cast<size_t>(N) * K * 4);
     if (reader.peek() != EOF) {
       initializer = std::make_unique<HNSWInitializer>(N);
       initializer->load(reader);
