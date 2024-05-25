@@ -81,7 +81,9 @@ template <typename node_t> struct Graph {
     writer.write((char *)eps.data(), nep * 4);
     writer.write((char *)&N, 4);
     writer.write((char *)&K, 4);
-    writer.write((char *)data, static_cast<size_t>(N) * K * 4);
+    for (int i = 0; i < N; i++){
+      writer.write((char *)edges(i), K * 4);
+    }
     if (initializer) {
       initializer->save(writer);
     }
@@ -99,7 +101,9 @@ template <typename node_t> struct Graph {
     reader.read((char *)&N, 4);
     reader.read((char *)&K, 4);
     data = (node_t *)alloc2M(static_cast<size_t>(N) * K * 4);
-    reader.read((char *)data, static_cast<size_t>(N) * K * 4);
+    for (int i = 0; i < N; i++){
+      reader.read((char *)edges(i), K * 4);
+    }
     if (reader.peek() != EOF) {
       initializer = std::make_unique<HNSWInitializer>(N);
       initializer->load(reader);
