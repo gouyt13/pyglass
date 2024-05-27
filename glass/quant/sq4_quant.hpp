@@ -30,14 +30,14 @@ struct SQ4Quantizer {
 
   ~SQ4Quantizer() { free(codes); }
 
-  void train(const float *data, int n) {
+  void train(const float *data, int64_t n) {
     for (int64_t i = 0; i < n * d; ++i) {
       mx = std::max(mx, data[i]);
       mi = std::min(mi, data[i]);
     }
     dif = mx - mi;
     codes = (data_type *)alloc2M(n * code_size);
-    for (int i = 0; i < n; ++i) {
+    for (int64_t i = 0; i < n; ++i) {
       encode(data + i * d, get_data(i));
     }
     reorderer.train(data, n);

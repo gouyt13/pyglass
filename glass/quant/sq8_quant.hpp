@@ -27,7 +27,7 @@ template <Metric metric, int DIM = 0> struct SQ8Quantizer {
 
   ~SQ8Quantizer() { free(codes); }
 
-  void train(const float *data, int n) {
+  void train(const float *data, int64_t n) {
     for (int64_t i = 0; i < n; ++i) {
       for (int64_t j = 0; j < d; ++j) {
         mx[j] = std::max(mx[j], data[i * d + j]);
@@ -41,7 +41,7 @@ template <Metric metric, int DIM = 0> struct SQ8Quantizer {
       dif[j] = mx[j] = mi[j] = 0;
     }
     codes = (char *)alloc2M((size_t)n * code_size);
-    for (int i = 0; i < n; ++i) {
+    for (int64_t i = 0; i < n; ++i) {
       encode(data + i * d, get_data(i));
     }
   }

@@ -63,7 +63,7 @@ template <typename Quantizer> struct Searcher : public SearcherBase {
     GenRandom(rng, sample_points.data(), sample_points_num, nb);
     optimize_queries.resize(sample_points_num * d);
     for (int i = 0; i < sample_points_num; ++i) {
-      memcpy(optimize_queries.data() + i * d, data + sample_points[i] * d,
+      memcpy(optimize_queries.data() + i * d, data + sample_points[i] * static_cast<size_t>(d),
              d * sizeof(float));
     }
   }
