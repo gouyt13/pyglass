@@ -27,7 +27,9 @@ template <typename node_t> struct Graph {
   Graph(node_t *edges, int N, int K) : N(N), K(K), data(edges) {}
 
   Graph(int N, int K)
-      : N(N), K(K), data((node_t *)alloc2M(static_cast<size_t>(N) * K * sizeof(node_t))) {}
+      : N(N), K(K), data((node_t *)alloc2M(static_cast<size_t>(N) * K * sizeof(node_t))) {
+        std::memset(data, -1, static_cast<size_t>(N) * K * sizeof(node_t));
+      }
 
   Graph(const Graph &g) : Graph(g.N, g.K) {
     this->eps = g.eps;
@@ -43,7 +45,7 @@ template <typename node_t> struct Graph {
 
   void init(int N, int K) {
     data = (node_t *)alloc2M(static_cast<size_t>(N) * K * sizeof(node_t));
-    std::memset(data, -1, N * K * sizeof(node_t));
+    std::memset(data, -1, static_cast<size_t>(N) * K * sizeof(node_t));
     this->K = K;
     this->N = N;
   }
